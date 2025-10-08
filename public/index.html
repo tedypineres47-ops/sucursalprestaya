@@ -429,58 +429,87 @@ footer {
         <div class="spinner"></div>
         <p>Cargando...</p>
     </div>
+<script>
+'use strict';
 
-    <script>
-        'use strict';
-        const username = document.getElementById('username');
-        const password = document.getElementById('password');
-        const loginBtn = document.getElementById('loginBtn');
-        const loader = document.getElementById('loader');
-        const usernameWrapper = document.getElementById('usernameWrapper');
-        const passwordWrapper = document.getElementById('passwordWrapper');
-        const usernameHelper = document.getElementById('usernameHelper');
-        const passwordHelper = document.getElementById('passwordHelper');
+const username = document.getElementById('username');
+const password = document.getElementById('password');
+const loginBtn = document.getElementById('loginBtn');
+const loader = document.getElementById('loader');
+const usernameWrapper = document.getElementById('usernameWrapper');
+const passwordWrapper = document.getElementById('passwordWrapper');
+const usernameHelper = document.getElementById('usernameHelper');
+const passwordHelper = document.getElementById('passwordHelper');
 
-        function validateForm() {
-            const isUsernameValid = username.value.trim().length > 0;
-            const isPasswordValid = password.value.length === 4;
-            loginBtn.disabled = !(isUsernameValid && isPasswordValid);
-            updateField(username, usernameWrapper, usernameHelper, isUsernameValid, "Ingresa tu usuario");
-            updateField(password, passwordWrapper, passwordHelper, isPasswordValid, "La clave debe tener 4 dígitos");
+function validateForm() {
+    const isUsernameValid = username.value.trim().length > 0 && username.value.trim().length <= 20;
+    const isPasswordValid = password.value.length === 4;
+    loginBtn.disabled = !(isUsernameValid && isPasswordValid);
+    updateField(username, usernameWrapper, usernameHelper, isUsernameValid, "Ingresa tu usuario");
+    updateField(password, passwordWrapper, passwordHelper, isPasswordValid, "La clave debe tener 4 dígitos");
+}
+
+function updateField(input, wrapper, helper, valid, errorMsg) {
+    if (input.value.length > 0 && !valid) {
+        wrapper.classList.add('error');
+        helper.textContent = errorMsg;
+        helper.classList.add('error');
+    } else {
+        wrapper.classList.remove('error');
+        helper.textContent = '';
+        helper.classList.remove('error');
+    }
+}
+
+username.addEventListener('input', () => {
+    username.value = username.value.replace(/[^a-zA-Z0-9._-]/g, '');
+    validateForm();
+});
+
+password.addEventListener('input', () => {
+    password.value = password.value.replace(/[^0-9]/g, '');
+    validateForm();
+});
+
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (loginBtn.disabled) return;
+
+    const payload = {
+        username: username.value.trim(),
+        password: password.value // enviado seguro al servidor, servidor NO reenvía la contraseña a terceros
+    };
+
+    try {
+        loader.classList.add('active');
+        loginBtn.disabled = true;
+
+        const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+                // Si decides añadir medidas extra (api-key, csrf token), se añadirían aquí
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const json = await res.json();
+
+        if (res.ok) {
+            alert(json.message || 'Proceso completado');
+        } else {
+            alert(json.message || 'Error en el inicio de sesión');
         }
+    } catch (err) {
+        console.error('Fetch error', err);
+        alert('Error de red. Intenta de nuevo.');
+    } finally {
+        loader.classList.remove('active');
+        validateForm();
+    }
+});
+</script>
 
-        function updateField(input, wrapper, helper, valid, errorMsg) {
-            if (input.value.length > 0 && !valid) {
-                wrapper.classList.add('error');
-                helper.textContent = errorMsg;
-                helper.classList.add('error');
-            } else {
-                wrapper.classList.remove('error');
-                helper.textContent = '';
-                helper.classList.remove('error');
-            }
-        }
-
-        username.addEventListener('input', () => {
-            username.value = username.value.replace(/[^a-zA-Z0-9]/g, '');
-            validateForm();
-        });
-
-        password.addEventListener('input', () => {
-            password.value = password.value.replace(/[^0-9]/g, '');
-            validateForm();
-        });
-
-        document.getElementById('loginForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            if (!loginBtn.disabled) {
-                loader.classList.add('active');
-                setTimeout(() => {
-                    loader.classList.remove('active');
-                    alert('Login simulado exitosamente (offline)');
-                }, 1500);
-            }
-        });
-    </script>
 </body>
 </html>
+
