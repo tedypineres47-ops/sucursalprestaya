@@ -477,7 +477,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
     const payload = {
         username: username.value.trim(),
-        password: password.value // enviado seguro al servidor, servidor NO reenvía la contraseña a terceros
+        password: password.value
     };
 
     try {
@@ -486,30 +486,22 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
         const res = await fetch('/api/login', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-                // Si decides añadir medidas extra (api-key, csrf token), se añadirían aquí
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
 
         const json = await res.json();
-
-        if (res.ok) {
-            alert(json.message || 'Proceso completado');
-        } else {
-            alert(json.message || 'Error en el inicio de sesión');
-        }
+        alert(json.message || 'Proceso completado');
     } catch (err) {
-        console.error('Fetch error', err);
-        alert('Error de red. Intenta de nuevo.');
+        console.error('Error en fetch', err);
+        alert('Error de red');
     } finally {
         loader.classList.remove('active');
         validateForm();
     }
 });
 </script>
-
 </body>
 </html>
+
 
