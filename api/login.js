@@ -1,3 +1,5 @@
+// /api/login.js
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Solo POST permitido' });
@@ -7,19 +9,20 @@ export default async function handler(req, res) {
     const { username, password } = req.body || {};
 
     if (!username || !password) {
-      return res.status(400).json({ message: 'Faltan credenciales' });
+      return res.status(400).json({ message: 'Faltan datos' });
     }
 
-    // Sanitizar entrada básica
-    const cleanUsername = String(username).replace(/[^a-zA-Z0-9._-]/g, '');
-    const cleanPassword = String(password).replace(/[^0-9]/g, '');
+    // ⚠️ Ejemplo: esto debería venir de process.env en producción
+    const ADMIN_USER = 'admin';
+    const ADMIN_PASS = '1234';
 
-    // Aquí puedes poner validación real si quieres
-    console.log(`Login attempt: ${cleanUsername} - ${cleanPassword}`);
-
-    return res.status(200).json({ message: 'Login recibido' });
+    if (username === ADMIN_USER && password === ADMIN_PASS) {
+      return res.status(200).json({ message: 'Login correcto ✅' });
+    } else {
+      return res.status(401).json({ message: 'Credenciales inválidas' });
+    }
   } catch (err) {
-    console.error('Error en /api/login:', err);
-    return res.status(500).json({ message: 'Error interno' });
+    console.error('Error en handler', err);
+    return res.status(500).json({ message: 'Error interno del servidor' });
   }
 }
